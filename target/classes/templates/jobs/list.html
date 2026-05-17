@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html th:replace="~{base :: layout(~{::main}, ~{::scripts})}">
+<body>
+<main>
+    <div class="container">
+
+
+    <!-- Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2>Available Jobs</h2>
+
+        <th:block sec:authorize="hasRole('EMPLOYER')">
+            <a th:href="@{/jobs/post}" class="btn btn-primary">Post New Job</a>
+        </th:block>
+    </div>
+
+    <!-- ✅ Flash Messages -->
+	<div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+	
+	    <!-- Success -->
+	    <div th:if="${success}" class="toast success">Job posted successfully!</div>
+	
+	    <div th:if="${updated}" class="toast success">Job updated successfully!</div>
+	
+	    <!-- Error -->
+	    <div th:if="${deleted}" class="toast error">Job deleted successfully!</div>
+	
+	</div>
+
+    <!-- Search -->
+    <form th:action="@{/jobs}" method="get" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+        <input type="text" name="query" th:value="${searchQuery}" 
+               class="form-control" 
+               placeholder="Search by title, category, or location..." 
+               style="flex: 1;">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a th:href="@{/jobs}" class="btn btn-secondary" 
+           th:if="${searchQuery != null}">Clear</a>
+    </form>
+
+    <!-- Jobs -->
+    <div class="grid grid-cols-2">
+        <div th:each="job : ${jobs}" class="card job-card">
+
+            <h3 th:text="${job.title}" style="color: var(--primary);"></h3>
+
+            <div class="meta">
+                <span th:text="${job.category}"></span> • 
+                <span th:text="${job.location}"></span> •
+                <span th:text="${job.salary != null ? '$' + job.salary : 'Salary DOE'}"></span>
+            </div>
+
+            <p th:text="${#strings.abbreviate(job.description, 100)}"></p>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:1rem;">
+
+                <!-- View -->
+                <a th:href="@{/jobs/{id}(id=${job.id})}" class="btn btn-secondary">
+                    View Details
+                </a>
+
+                <!-- Only Owner -->
+                <th:block sec:authorize="hasRole('EMPLOYER')"
+                          th:if="${#authentication.principal.user.id == job.employer.id}">
+
+                    <a th:href="@{/jobs/edit/{id}(id=${job.id})}" class="btn btn-primary">
+                        Edit
+                    </a>
+
+                    <form th:action="@{/jobs/delete/{id}(id=${job.id})}" method="post">
+                        <button type="submit" class="btn btn-danger"
+                                onclick="return confirm('Delete this job?');">
+                            Delete
+                        </button>
+                    </form>
+
+                </th:block>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty -->
+    <div th:if="${#lists.isEmpty(jobs)}" style="text-align:center; padding:3rem;">
+        <h3>No jobs found</h3>
+    </div>
+
+</div>
+
+
+</main>
+
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('.toast').forEach(el => el.remove());
+    }, 3000);
+</script>
+
+</body>
+</html>

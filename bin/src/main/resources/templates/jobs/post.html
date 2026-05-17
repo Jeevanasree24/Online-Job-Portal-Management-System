@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(~{::main})}">
+<body>
+    <main>
+        <div class="container" style="max-width: 800px;">
+            <div class="card">
+                <h2 style="margin-bottom: 2rem;">Post a New Job</h2>
+                
+                <form th:action="@{/jobs/post}" th:object="${job}" method="post">
+                    <div class="form-group">
+                        <label class="form-label" for="title">Job Title</label>
+                        <input type="text" id="title" th:field="*{title}" class="form-control" required autofocus>
+                        <p class="error-text" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+                    </div>
+
+                    <div class="grid grid-cols-2" style="gap: 1.5rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="category">Category</label>
+                            <input type="text" id="category" th:field="*{category}" class="form-control" placeholder="e.g. Engineering, Marketing" required>
+                            <p class="error-text" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="location">Location</label>
+                            <input type="text" id="location" th:field="*{location}" class="form-control" placeholder="e.g. Remote, New York" required>
+                            <p class="error-text" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2" style="gap: 1.5rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="salary">Salary ($)</label>
+                            <input type="number" step="0.01" id="salary" th:field="*{salary}" class="form-control" placeholder="e.g. 80000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="experience">Experience Level</label>
+                            <input type="text" id="experience" th:field="*{experience}" class="form-control" placeholder="e.g. 2+ Years" required>
+                            <p class="error-text" th:if="${#fields.hasErrors('experience')}" th:errors="*{experience}"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="description">Job Description</label>
+                        <textarea id="description" th:field="*{description}" class="form-control" rows="6" required></textarea>
+                        <p class="error-text" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="skillsRequired">Skills Required</label>
+                        <textarea id="skillsRequired" th:field="*{skillsRequired}" class="form-control" rows="4" required></textarea>
+                        <p class="error-text" th:if="${#fields.hasErrors('skillsRequired')}" th:errors="*{skillsRequired}"></p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-primary">Post Job</button>
+                        <a th:href="@{/dashboard}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

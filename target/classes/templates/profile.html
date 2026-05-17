@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(~{::main}, null)}">
+<body>
+    <main>
+        <div class="container" style="max-width: 600px; margin-top: 2rem;">
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2>My Profile</h2>
+                    <a th:href="@{/dashboard}" class="btn btn-secondary" style="font-size: 0.85rem;">Back to Dashboard</a>
+                </div>
+
+                <div class="meta" style="margin-bottom: 2rem;">
+                    <p><strong>Name:</strong> <span th:text="${user.name}"></span></p>
+                    <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+                    <p><strong>Account Type:</strong> <span th:text="${user.role.name()}"></span></p>
+                </div>
+
+                <th:block sec:authorize="hasRole('STUDENT')">
+                    <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+                    
+                    <h3>Resume</h3>
+                    <div th:if="${user.resumeFilePath != null}" style="margin-bottom: 1.5rem; padding: 1rem; background: #f8fafc; border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between;">
+                        <span style="font-weight: 500; color: var(--primary);">Current Resume Uploaded</span>
+                        <a th:href="@{'/uploads/' + ${user.resumeFilePath}}" target="_blank" class="btn btn-secondary">View File</a>
+                    </div>
+
+                    <form th:action="@{/profile/upload-resume}" method="post" enctype="multipart/form-data" style="margin-top: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label" for="resume">Upload New Resume (PDF, DOCX)</label>
+                            <input type="file" id="resume" name="resume" class="form-control" accept=".pdf,.doc,.docx" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </form>
+                </th:block>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

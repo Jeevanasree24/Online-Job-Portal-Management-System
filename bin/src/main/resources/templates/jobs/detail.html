@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(~{::main})}">
+<body>
+    <main>
+        <div class="container" style="max-width: 900px;">
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+            <div class="card" th:if="${job != null}">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <h1 th:text="${job.title}" style="margin-bottom: 0.5rem; color: var(--primary);">Job Title</h1>
+                        <p style="font-weight: 500; font-size: 1.1rem; color: var(--text-main);">
+                            Posted by <span th:text="${job.employer.name}">Employer Name</span>
+                        </p>
+                    </div>
+                    
+                    <th:block sec:authorize="hasRole('STUDENT')">
+                        <a th:href="@{/applications/apply/{id}(id=${job.id})}" class="btn btn-primary">Apply Now</a>
+                    </th:block>
+                </div>
+
+                <div class="meta" style="display: flex; gap: 2rem; margin: 2rem 0; padding-bottom: 2rem; border-bottom: 1px solid var(--border);">
+                    <div>
+                        <span class="form-label" style="font-size: 0.85rem;">Category</span>
+                        <span th:text="${job.category}">Category</span>
+                    </div>
+                    <div>
+                        <span class="form-label" style="font-size: 0.85rem;">Location</span>
+                        <span th:text="${job.location}">Location</span>
+                    </div>
+                    <div>
+                        <span class="form-label" style="font-size: 0.85rem;">Salary</span>
+                        <span th:text="${job.salary != null ? '$' + job.salary : 'Not specified'}">Salary</span>
+                    </div>
+                    <div>
+                        <span class="form-label" style="font-size: 0.85rem;">Experience</span>
+                        <span th:text="${job.experience}">Experience</span>
+                    </div>
+                    <div>
+                        <span class="form-label" style="font-size: 0.85rem;">Posted On</span>
+                        <span th:text="${job.postedAt != null ? #temporals.format(job.postedAt, 'dd MMM yyyy') : 'Recently'}">Date</span>
+                    </div>
+                </div>
+
+                <div>
+                    <h3>Description</h3>
+                    <div style="white-space: pre-wrap; margin-bottom: 2rem;" th:text="${job.description}">Job Description</div>
+                    
+                    <h3>Skills Required</h3>
+                    <div style="white-space: pre-wrap;" th:text="${job.skillsRequired}">Skills Required</div>
+                </div>
+
+                <!-- Employer Application View -->
+                <div th:if="${applications != null}" style="margin-top: 3rem; border-top: 2px solid var(--border); padding-top: 2rem;">
+                    <h3>Applicants (<span th:text="${#lists.size(applications)}">0</span>)</h3>
+                    
+                    <div th:if="${#lists.isEmpty(applications)}" style="color: var(--text-muted); margin-top: 1rem;">
+                        No one has applied to this job yet.
+                    </div>
+
+                    <div th:if="${not #lists.isEmpty(applications)}" class="table-container" style="margin-top: 1.5rem;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Applicant Name</th>
+                                    <th>Email</th>
+                                    <th>Applied On</th>
+                                    <th>Resume</th>
+                                    <th>Cover Letter</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="app : ${applications}">
+                                    <td th:text="${app.applicant.name}">Name</td>
+                                    <td th:text="${app.applicant.email}">Email</td>
+                                    <td th:text="${#temporals.format(app.appliedAt, 'dd MMM yyyy')}">Date</td>
+                                    <td>
+                                        <a th:if="${app.applicant.resumeFilePath != null}" 
+                                           th:href="@{'/uploads/' + ${app.applicant.resumeFilePath}}" 
+                                           target="_blank" style="color: var(--primary); font-weight: 500;">Download</a>
+                                        <span th:if="${app.applicant.resumeFilePath == null}" style="color: var(--text-muted);">None</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${app.coverLetter != null and !app.coverLetter.isEmpty()}" 
+                                              th:title="${app.coverLetter}" style="cursor: pointer; color: var(--primary); font-weight: 500;" 
+                                              onclick="alert(this.getAttribute('title'))">Read Note</span>
+                                        <span th:if="${app.coverLetter == null or app.coverLetter.isEmpty()}" style="color: var(--text-muted);">None</span>
+                                    </td>
+                                    <td>
+                                        <span th:class="'badge badge-' + ${#strings.toLowerCase(app.status.name())}" 
+                                              th:text="${app.status.name()}">STATUS</span>
+                                    </td>
+                                    <td>
+                                        <form th:action="@{/applications/{id}/status(id=${app.id})}" method="post" style="display: flex; gap: 0.5rem; align-items: center;">
+                                            <select name="status" class="form-control" style="padding: 0.25rem; font-size: 0.85rem; width: auto;" onchange="this.form.submit()">
+                                                <option value="PENDING" th:selected="${app.status.name() == 'PENDING'}">Pending</option>
+                                                <option value="SHORTLISTED" th:selected="${app.status.name() == 'SHORTLISTED'}">Shortlist</option>
+                                                <option value="REJECTED" th:selected="${app.status.name() == 'REJECTED'}">Reject</option>
+                                            </select>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${job == null}" class="alert alert-error">
+                Job not found.
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(~{::main}, null)}">
+<body>
+    <main>
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2>Welcome, <span th:text="${user.name}">User</span></h2>
+                <span class="badge badge-shortlisted" th:text="${user.role.name()}">ROLE</span>
+            </div>
+
+            <div class="grid grid-cols-2">
+                <!-- EMPLOYER DASHBOARD -->
+                <th:block sec:authorize="hasRole('EMPLOYER')">
+                    <div class="card">
+                        <h3>Quick Actions</h3>
+                        <p>Manage your job postings and applicants.</p>
+                        <a th:href="@{/jobs/post}" class="btn btn-primary" style="margin-top: 1rem;">Post a New Job</a>
+                    </div>
+                    <div class="card">
+                        <h3>Your Jobs</h3>
+                        <p>View jobs you have posted and track applicants.</p>
+                        <a th:href="@{/jobs}" class="btn btn-secondary" style="margin-top: 1rem;">View Your Jobs</a>
+                    </div>
+                </th:block>
+
+                <!-- STUDENT DASHBOARD -->
+                <th:block sec:authorize="hasRole('STUDENT')">
+                    <div class="card">
+                        <h3>Job Search</h3>
+                        <p>Find new opportunities matching your profile.</p>
+                        <a th:href="@{/jobs}" class="btn btn-primary" style="margin-top: 1rem;">Browse Jobs</a>
+                    </div>
+                    <div class="card">
+                        <h3>My Applications</h3>
+                        <p>Track the status of your submitted applications.</p>
+                        <a th:href="@{/applications}" class="btn btn-secondary" style="margin-top: 1rem;">View Applications</a>
+                    </div>
+                    <div class="card">
+                        <h3>My Profile</h3>
+                        <p>Manage your details and upload your latest resume.</p>
+                        <a th:href="@{/profile}" class="btn btn-secondary" style="margin-top: 1rem;">Update Profile</a>
+                    </div>
+                </th:block>
+                
+                <!-- ADMIN DASHBOARD -->
+                <th:block sec:authorize="hasRole('ADMIN')">
+                     <div class="card">
+                        <h3>Admin Controls</h3>
+                        <p>Manage system users and data.</p>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

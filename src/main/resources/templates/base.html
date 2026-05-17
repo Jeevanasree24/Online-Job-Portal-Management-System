@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(content, scripts)">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevate - Job Portal</title>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+
+
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="container">
+        <a th:href="@{/}" class="navbar-brand">Elevate.</a>
+
+
+    <div class="nav-links">
+        <a th:href="@{/jobs}" class="nav-link">Browse Jobs</a>
+
+        <th:block sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}" class="btn btn-secondary">Log In</a>
+            <a th:href="@{/register}" class="btn btn-primary">Sign Up</a>
+        </th:block>
+
+        <th:block sec:authorize="isAuthenticated()">
+            <a th:href="@{/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/profile}" class="nav-link">Profile</a>
+
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-secondary">Log Out</button>
+            </form>
+        </th:block>
+    </div>
+</div>
+
+
+</nav>
+
+<main>
+    <div th:replace="${content}"></div>
+</main>
+
+<!-- ✅ Script Injection -->
+<th:block th:if="${scripts}">
+    <th:block th:replace="${scripts}"></th:block>
+</th:block>
+
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html th:replace="~{base :: layout(~{::main}, null)}">
+<body>
+    <main>
+        <div class="container">
+            <div class="hero">
+                <h1>Find Your Dream Job Today</h1>
+                <p>Connect with top employers and discover opportunities that match your skills.</p>
+                <div style="margin-top: 2rem;">
+                    <a th:href="@{/jobs}" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">Explore Jobs</a>
+                    <a th:href="@{/register}" class="btn btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem; margin-left: 1rem;">Join Elevate</a>
+                </div>
+            </div>
+
+            <h2 style="text-align: center; margin-bottom: 2rem;">Why Choose Elevate?</h2>
+            <div class="grid grid-cols-3">
+                <div class="card" style="text-align: center;">
+                    <h3>For Students</h3>
+                    <p>Create a profile, upload your resume, and apply to top companies with a single click.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h3>For Employers</h3>
+                    <p>Post jobs, manage applications, and find the perfect candidate to grow your team.</p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h3>Seamless Tracking</h3>
+                    <p>Keep track of your application status in real-time. Never miss an update.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

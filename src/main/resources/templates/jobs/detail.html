@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html th:replace="~{base :: layout(~{::main}, ~{::scripts})}">
+<body>
+<main>
+    <div class="container" style="max-width: 900px;">
+
+
+    <!-- Messages -->
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+
+    <div class="card" th:if="${job != null}">
+
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h1 th:text="${job.title}" style="color: var(--primary);"></h1>
+                <p>
+                    Posted by <span th:text="${job.employer.name}"></span>
+                </p>
+            </div>
+
+            <!-- APPLY SECTION -->
+            <th:block sec:authorize="hasRole('STUDENT')">
+
+                <!-- ❌ Deadline Passed -->
+                <button th:if="${job.applicationDeadline != null and job.applicationDeadline.isBefore(T(java.time.LocalDateTime).now())}"
+                        class="btn btn-danger" disabled>
+                    Application Closed
+                </button>
+
+                <!-- ❌ No Resume -->
+                <button th:if="${job.applicationDeadline == null or job.applicationDeadline.isAfter(T(java.time.LocalDateTime).now())}
+                               and ${#authentication.principal.user.resumeFilePath == null}"
+                        class="btn btn-danger" disabled>
+                    Upload Resume to Apply
+                </button>
+
+                <!-- ✅ Already Applied -->
+                <button th:if="${applied}" class="btn btn-secondary" disabled>
+                    Applied
+                </button>
+
+                <!-- ✅ Apply -->
+                <form th:if="${!applied 
+                              and #authentication.principal.user.resumeFilePath != null 
+                              and (job.applicationDeadline == null or job.applicationDeadline.isAfter(T(java.time.LocalDateTime).now()))}"
+                      th:action="@{/applications/apply/{id}(id=${job.id})}"
+                      method="post">
+                    <button type="submit" class="btn btn-primary">
+                        Apply Now
+                    </button>
+                </form>
+
+            </th:block>
+        </div>
+
+        <!-- Meta Info -->
+        <div class="meta" style="display: flex; gap: 2rem; margin: 2rem 0; border-bottom: 1px solid var(--border); padding-bottom: 2rem;">
+
+            <div>
+                <span class="form-label">Category</span>
+                <span th:text="${job.category}"></span>
+            </div>
+
+            <div>
+                <span class="form-label">Location</span>
+                <span th:text="${job.location}"></span>
+            </div>
+
+            <div>
+                <span class="form-label">Salary</span>
+                <span th:text="${job.salary != null ? '$' + job.salary : 'Not specified'}"></span>
+            </div>
+
+            <div>
+                <span class="form-label">Experience</span>
+                <span th:text="${job.experience}"></span>
+            </div>
+
+            <div>
+                <span class="form-label">Posted On</span>
+                <span th:text="${job.postedAt != null ? #temporals.format(job.postedAt, 'dd MMM yyyy') : 'Recently'}"></span>
+            </div>
+
+            <!-- ✅ NEW: DEADLINE -->
+            <div>
+                <span class="form-label">Deadline</span>
+                <span th:text="${job.applicationDeadline != null ? #temporals.format(job.applicationDeadline, 'dd MMM yyyy, HH:mm') : 'No deadline'}"></span>
+            </div>
+
+        </div>
+
+        <!-- ❗ Deadline Warning -->
+        <p th:if="${job.applicationDeadline != null and job.applicationDeadline.isBefore(T(java.time.LocalDateTime).now())}"
+           style="color:red; font-weight:600;">
+            ⚠ This job is no longer accepting applications.
+        </p>
+
+        <!-- Description -->
+        <div>
+            <h3>Description</h3>
+            <div th:text="${job.description}" style="white-space: pre-wrap;"></div>
+
+            <h3>Skills Required</h3>
+            <div th:text="${job.skillsRequired}" style="white-space: pre-wrap;"></div>
+        </div>
+
+        <!-- Employer Applications -->
+       <div th:if="${applications != null}" style="margin-top: 3rem;">
+	
+	    <h3>Applicants (<span th:text="${#lists.size(applications)}"></span>)</h3>
+	
+	    <div th:if="${#lists.isEmpty(applications)}">
+	        No one has applied yet.
+	    </div>
+	
+	    <table th:if="${not #lists.isEmpty(applications)}">
+	        <thead>
+	            <tr>
+	                <th>Name</th>
+	                <th>Email</th>
+	                <th>Resume</th>
+	                <th>Cover Letter</th>
+	                <th>Status</th>
+	                <th>Action</th>
+	            </tr>
+	        </thead>
+	
+	        <tbody>
+	            <tr th:each="app : ${applications}">
+	
+	                <td th:text="${app.applicant.name}"></td>
+	                <td th:text="${app.applicant.email}"></td>
+	
+	                <!-- ✅ Resume Download -->
+	                <td>
+	                    <a th:if="${app.applicant.resumeFilePath != null}"
+	                       th:href="@{'/uploads/' + ${app.applicant.resumeFilePath}}"
+	                       target="_blank">
+	                        Download
+	                    </a>
+	                    <span th:if="${app.applicant.resumeFilePath == null}">No Resume</span>
+	                </td>
+	
+	                <!-- ✅ Cover Letter -->
+	                <td>
+	                    <span th:if="${app.coverLetter != null}"
+	                          th:title="${app.coverLetter}"
+	                          onclick="alert(this.getAttribute('title'))"
+	                          style="cursor:pointer; color:blue;">
+	                        View
+	                    </span>
+	                    <span th:if="${app.coverLetter == null}">None</span>
+	                </td>
+	
+	                <!-- ✅ Status -->
+	                <td th:text="${app.status}"></td>
+	
+	                <!-- ✅ Update Status -->
+	                <td>
+	                    <form th:action="@{/applications/{id}/status(id=${app.id})}" method="post">
+	                        <select name="status" onchange="this.form.submit()">
+	                            <option value="PENDING" th:selected="${app.status.name() == 'PENDING'}">Pending</option>
+	                            <option value="SHORTLISTED" th:selected="${app.status.name() == 'SHORTLISTED'}">Shortlist</option>
+	                            <option value="REJECTED" th:selected="${app.status.name() == 'REJECTED'}">Reject</option>
+	                        </select>
+	                    </form>
+	                </td>
+	
+	            </tr>
+	        </tbody>
+	    </table>
+	
+	</div>
+
+    </div>
+
+    <div th:if="${job == null}" class="alert alert-error">
+        Job not found.
+    </div>
+
+</div>
+
+
+</main>
+</body>
+</html>
