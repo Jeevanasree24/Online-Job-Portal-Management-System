@@ -189,11 +189,7 @@ Add screenshots of:
 
 # Author
 
-Jeevanasree Perisetla
-
-* GitHub: [https://github.com/Jeevanasree24](https://github.com/Jeevanasree24)
-* HackerRank: [https://www.hackerrank.com/profile/vtu25933](https://www.hackerrank.com/profile/vtu25933)
-* GeeksforGeeks: [https://www.geeksforgeeks.org/user/jeevanasreeperisetla/](https://www.geeksforgeeks.org/user/jeevanasreeperisetla/)
+Jeevana Sree Perisetla
 
 ---
 
