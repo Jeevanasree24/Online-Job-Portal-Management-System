@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: jobportal
+    env: java
+    buildCommand: mvn clean package
+    startCommand: java -jar target/jobportal-0.0.1-SNAPSHOT.jar
