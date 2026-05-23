@@ -41,15 +41,13 @@ public AuthenticationProvider authenticationProvider() {
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     http
-        .cors(cors -> cors.disable())
         .authorizeHttpRequests(auth -> auth
             // ✅ PUBLIC ROUTES
             .requestMatchers(
                     "/", 
                     "/register", 
                     "/login", 
-                    "/auth/send-otp",
-                    "/auth/verify-otp", 
+                    "/auth/",
                     "/js/**", 
                     "/images/**", 
                     "/h2-console/**"
