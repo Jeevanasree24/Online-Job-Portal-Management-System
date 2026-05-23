@@ -95,7 +95,6 @@ function sendOtp() {
 
     fetch('/auth/send-otp', {
         method: 'POST',
-        credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
         },
