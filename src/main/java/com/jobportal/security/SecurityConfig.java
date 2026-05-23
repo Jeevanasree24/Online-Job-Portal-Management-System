@@ -47,8 +47,8 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                     "/", 
                     "/register", 
                     "/login", 
-                    "/auth/**",          // 🔥 IMPORTANT: OTP APIs
-                    "/css/**", 
+                    "/auth/send-otp",
+                    "/auth/verify-otp", 
                     "/js/**", 
                     "/images/**", 
                     "/h2-console/**"
