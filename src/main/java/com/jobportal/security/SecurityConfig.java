@@ -47,7 +47,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                     "/", 
                     "/register", 
                     "/login", 
-                    "/auth/",
+                    "/auth/**",
                     "/js/**", 
                     "/images/**", 
                     "/h2-console/**"
